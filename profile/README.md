@@ -28,24 +28,39 @@ Since Pectra, **~97%** of EIP-7702 delegations in the wild point at malicious sw
 | [draint-fe](https://github.com/DraintAi/draint-fe) | Next.js app + MetaMask Snap (`@draint/snap`) |
 | [draint-skills](https://github.com/DraintAi/draint-skills) | Composable Agent Skill for AI coding envs (Claude Code, Cursor) |
 
-## 🏆 Code-usage map (for judges)
+## Smart Accounts Kit Usage
 
-**Tracks:** Best Agent · Best use of Venice AI · Best Use of 1Shot Permissionless Relayer
+### Advanced Permissions
+Not used — drain't integrates via **Delegations (ERC-7710)**, not ERC-7715 Advanced Permissions.
 
-**MetaMask Smart Accounts Kit — Delegations (create / sign / redeem):**
-- [oneshot7710.ts](https://github.com/DraintAi/draint-be/blob/main/src/agent/oneshot7710.ts) — `toMetaMaskSmartAccount`, `createDelegation`, `signDelegation`, `signAuthorization`, redeem via `permissionContext`
-- [DraintCuratedTargetsEnforcer.sol](https://github.com/DraintAi/draint-sc/blob/main/src/DraintCuratedTargetsEnforcer.sol) — ICaveatEnforcer (delegation framework v1.3.0), verified on Sepolia
-- Snap intercept (main flow): [snap/src/index.tsx](https://github.com/DraintAi/draint-fe/blob/main/snap/src/index.tsx) · [eip7702.ts](https://github.com/DraintAi/draint-fe/blob/main/snap/src/eip7702.ts)
+### Delegations
+- **Create delegation:** [draint-be/src/agent/oneshot7710.ts](https://github.com/DraintAi/draint-be/blob/main/src/agent/oneshot7710.ts) — `toMetaMaskSmartAccount` (Stateless-7702) + `createDelegation` (ERC-20 transfer scope) + `signDelegation` + `signAuthorization`
+- **Redeem delegation:** [draint-be/src/agent/oneshot7710.ts](https://github.com/DraintAi/draint-be/blob/main/src/agent/oneshot7710.ts) — signed `permissionContext` submitted to the 1Shot relayer for redemption; on-chain caveat enforced by [draint-sc/src/DraintCuratedTargetsEnforcer.sol](https://github.com/DraintAi/draint-sc/blob/main/src/DraintCuratedTargetsEnforcer.sol) (ICaveatEnforcer, delegation framework v1.3.0, verified on Sepolia)
+- Snap reads EIP-7702 delegation targets in the wallet's main flow: [draint-fe/snap/src/index.tsx](https://github.com/DraintAi/draint-fe/blob/main/snap/src/index.tsx) · [eip7702.ts](https://github.com/DraintAi/draint-fe/blob/main/snap/src/eip7702.ts)
 
-**Best Agent — autonomous loop:**
-- [loop.ts](https://github.com/DraintAi/draint-be/blob/main/src/agent/loop.ts) · [monitor.ts](https://github.com/DraintAi/draint-be/blob/main/src/agent/monitor.ts) · [routes/agent.ts](https://github.com/DraintAi/draint-be/blob/main/src/routes/agent.ts)
+### Redelegation
+Not used — drain't uses a single-hop delegation (user → 1Shot redeemer).
 
-**1Shot Permissionless Relayer — gasless EIP-7710 rescue (getFeeData → estimate → send), USDC fee, zero ETH:**
-- [oneshot7710.ts](https://github.com/DraintAi/draint-be/blob/main/src/agent/oneshot7710.ts) · [rescue.ts](https://github.com/DraintAi/draint-be/blob/main/src/agent/rescue.ts) · [scripts/oneshot-rescue.ts](https://github.com/DraintAi/draint-be/blob/main/scripts/oneshot-rescue.ts)
-- Verified tx: [arbiscan](https://arbiscan.io/tx/0x401874cc3404083dca0010684931604dd9a1a944129d8653646a3882e0f02d35)
+### x402
+Not used.
 
-**Venice AI — classifier + reasoning:**
-- [venice.ts](https://github.com/DraintAi/draint-be/blob/main/src/lib/classifier/venice.ts) · [classifier/index.ts](https://github.com/DraintAi/draint-be/blob/main/src/lib/classifier/index.ts)
+## 1Shot API Usage
+- Full EIP-7710 gasless flow — `relayer_getCapabilities` → `relayer_getFeeData` → `relayer_estimate7710Transaction` → `relayer_send7710Transaction` → `relayer_getStatus`: [draint-be/src/agent/oneshot7710.ts](https://github.com/DraintAi/draint-be/blob/main/src/agent/oneshot7710.ts)
+- Rescue routing / modes: [draint-be/src/agent/rescue.ts](https://github.com/DraintAi/draint-be/blob/main/src/agent/rescue.ts)
+- Runnable CLI: [draint-be/scripts/oneshot-rescue.ts](https://github.com/DraintAi/draint-be/blob/main/scripts/oneshot-rescue.ts)
+- Verified on-chain (Arbitrum One, gas paid in USDC, zero ETH): [arbiscan tx](https://arbiscan.io/tx/0x401874cc3404083dca0010684931604dd9a1a944129d8653646a3882e0f02d35)
+
+## Venice AI Usage
+- Venice client + classification prompt: [draint-be/src/lib/classifier/venice.ts](https://github.com/DraintAi/draint-be/blob/main/src/lib/classifier/venice.ts)
+- Classifier orchestration (heuristic → Venice escalation on borderline): [draint-be/src/lib/classifier/index.ts](https://github.com/DraintAi/draint-be/blob/main/src/lib/classifier/index.ts)
+
+## Feedback
+<!-- If applying for the Feedback track: link your submitted feedback / opened issues here. -->
+
+## Social Media
+<!-- If applying for Best Social Media: link your X post tagging @MetaMaskDev (showcasing the drain't journey), and confirm criteria met. -->
+
+> Also applying for **Best Agent** — autonomous monitor→classify→rescue loop: [loop.ts](https://github.com/DraintAi/draint-be/blob/main/src/agent/loop.ts) · [monitor.ts](https://github.com/DraintAi/draint-be/blob/main/src/agent/monitor.ts) · [routes/agent.ts](https://github.com/DraintAi/draint-be/blob/main/src/routes/agent.ts)
 
 ## Built with
 MetaMask Smart Accounts Kit · Venice AI · 1Shot Permissionless Relayer · EIP-7702 / ERC-7710 · Foundry · Next.js · Hono on Bun
